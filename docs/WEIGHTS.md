@@ -1,0 +1,11 @@
+# Weight provenance and hosting
+
+- Upstream: `hustvl/yolos-small`
+- Revision: **not yet pinned** (`MODEL_REVISION = "unpinned"`). Run `python tools/pin_snapshot.py` to resolve the Hub's `main` to a 40-hex commit, download every manifest-listed file at that commit, cross-check each LFS file against the SHA-256 the Hub records, and write the commit and digests into the manifest and `src/yolos_detection_pipeline/pipeline.py`.
+- Weight format: SafeTensors (`model.safetensors`, 122,763,274 bytes as the Hub reported for `main` when this repository was built). The Hub repository also holds `pytorch_model.bin` (122,806,169 bytes), a pickle checkpoint with the same weights; it is not in the manifest and is never staged or loaded.
+- Manifest: `weights/yolos-small/dimer-base-manifest.json` (4 files: `README.md`, `config.json`, `model.safetensors`, `preprocessor_config.json`; `totalBytes` 122771871). Every `sha256` is `null` until the pin tool runs.
+- Committed copies: `config.json` (4,132 bytes) and `preprocessor_config.json` (292 bytes) are committed as the Hub served them, so the offline tests can check the label order and the processor settings. The pin tool replaces them with the bytes downloaded at the pinned commit before hashing, so the digests always describe the pinned bytes.
+- Upstream weight license: Apache-2.0 (the checkpoint's `README.md` front matter and the Hub's licence tag). The upstream code repository, `hustvl/YOLOS`, is MIT; no upstream code is vendored here.
+- Hosting: Apache-2.0 permits use, modification, distribution and commercial use, subject to keeping the licence and notices. The Git repository does not vendor the checkpoint (`weights/**/*.safetensors` is git-ignored).
+- Fresh clone, once pinned: `stage_missing_files(allow_download=True)` fetches only the manifest-listed files that are absent, at the pinned revision; `verify_snapshot()` then checks every file before any load. `weights/**` is marked `-text` in `.gitattributes`, so Windows `core.autocrlf` cannot rewrite the committed files and break their digests.
+- Loader trust boundary: Transformers `YolosForObjectDetection` and `YolosImageProcessor` with `trust_remote_code=False` and `local_files_only=True` from the verified directory. YOLOS has no separate backbone checkpoint: every tensor, including the ViT encoder's, comes from `model.safetensors`.

@@ -1,0 +1,30 @@
+{
+  "format": "dimer_hf_snapshot",
+  "formatVersion": 1,
+  "modelKey": "yolos-small",
+  "modelId": "hustvl/yolos-small",
+  "revision": "unpinned",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4173,
+      "sha256": null
+    },
+    {
+      "path": "config.json",
+      "bytes": 4132,
+      "sha256": null
+    },
+    {
+      "path": "model.safetensors",
+      "bytes": 122763274,
+      "sha256": null
+    },
+    {
+      "path": "preprocessor_config.json",
+      "bytes": 292,
+      "sha256": null
+    }
+  ],
+  "totalBytes": 122771871
+}
