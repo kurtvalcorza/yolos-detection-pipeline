@@ -18,7 +18,7 @@ date_published_source: "month of the YOLOS paper and first code release (arXiv:2
 > ⚠️ **Provided for research, training, and evaluation purposes only.** Model weights are redistributed unmodified under their upstream license, which controls your use, including any commercial use or redistribution; the accompanying code and notebooks are released under this repository's license. All of it is supplied **"as is"**, without warranty of any kind, and has not been validated for production, clinical, or safety-critical use. Running the notebooks downloads third-party weights and datasets governed by their own licenses and consumes compute on your own Colab/Kaggle account. To the maximum extent permitted by law, the maintainers of this repository and the DIMER platform accept no liability for any damages arising from their use. Hosting implies no affiliation with or endorsement by the original authors.
 
 > [!IMPORTANT]
-> The upstream snapshot is pinned to Hub commit `3d8f7130d3ce4907cb206fe1c8485dc8fe8703de`, and the manifest records every file's SHA-256. No execution with the pinned weights has been recorded yet, so this card claims no measured value for this repository.
+> The upstream snapshot is pinned to Hub commit `3d8f7130d3ce4907cb206fe1c8485dc8fe8703de`, and the manifest records every file's SHA-256. A default-path execution recorded on 2026-09-25 (Kaggle T4); REL12 BYOD exercise pending before promotion. The values this card reports come from that one run: one runtime, one seeded split of 40 drawn images, and 3 unseen drawn images.
 
 ---
 
@@ -32,7 +32,7 @@ date_published_source: "month of the YOLOS paper and first code release (arXiv:2
 
 #### Description
 
-`hustvl/yolos-small` is the Hugging Face Transformers release of YOLOS-S (You Only Look at One Sequence, small), from "You Only Look at One Sequence: Rethinking Transformer in Vision through Object Detection" (Fang et al., arXiv:2106.00666). The snapshot's `config.json` declares `YolosForObjectDetection`: a ViT encoder with 12 layers, hidden size 384, 6 attention heads and 16×16 patches, plus 100 detection tokens (`num_detection_tokens`). This repository has not counted the parameters.
+`hustvl/yolos-small` is the Hugging Face Transformers release of YOLOS-S (You Only Look at One Sequence, small), from "You Only Look at One Sequence: Rethinking Transformer in Vision through Object Detection" (Fang et al., arXiv:2106.00666). The snapshot's `config.json` declares `YolosForObjectDetection`: a ViT encoder with 12 layers, hidden size 384, 6 attention heads and 16×16 patches, plus 100 detection tokens (`num_detection_tokens`). The tutorial run counted 30,650,888 parameters for the model re-headed to three classes (16,159,880 trainable with the patch embedding and the first eight encoder layers frozen); the parameter count with the 92-logit pretrained head was not recorded separately.
 
 YOLOS asks how little a plain Vision Transformer must change to detect objects. The image's patch tokens and 100 learnable detection tokens pass through the same encoder, with no convolutional backbone and no decoder. Two small MLP heads then read one box and one class distribution from each detection token. The distribution covers 91 COCO category slots plus a "no object" class. At inference, `post_process_object_detection` takes each token's most probable class that is not "no object" and keeps the token when that probability reaches the threshold. There is no anchor box and no non-maximum suppression.
 
@@ -100,7 +100,7 @@ The tutorial's sample data is itself an instrument: Pillow drawings with flat co
 
 ###### Environment
 
-**Operating environment.** Python 3.12 with the pins in `pyproject.toml`: `torch==2.14.0`, `torchvision==0.29.0`, `torchaudio==2.11.0`, `transformers==4.57.6`, `scipy==1.18.1`, `safetensors==0.8.0`, `numpy==2.5.3`, `pillow==11.3.0`, `huggingface-hub==0.36.2`. Computation is float32. The code runs on CPU and uses CUDA automatically when available. `scipy` supplies the Hungarian matcher the fine-tuning loss needs. No run with the pinned weights has been recorded yet, so no runtime, memory or throughput figure is given.
+**Operating environment.** Python 3.12 with the pins in `pyproject.toml`: `torch==2.14.0`, `torchvision==0.29.0`, `torchaudio==2.11.0`, `transformers==4.57.6`, `scipy==1.18.1`, `safetensors==0.8.0`, `numpy==2.5.3`, `pillow==11.3.0`, `huggingface-hub==0.36.2`. Computation is float32. The code runs on CPU and uses CUDA automatically when available. `scipy` supplies the Hungarian matcher the fine-tuning loss needs. One default-path run is recorded (Kaggle Tesla T4, Python 3.12.13, torch 2.14.0+cu130, transformers 4.57.6, 2026-09-25): the notebook's second pass took 172.1 s, of which the 10-epoch fine-tune on 30 images took 105.5 s. No memory or throughput figure was measured.
 
 **Data environment.** The pretrained model assumes a photograph of an everyday scene containing COCO objects. An adapted model assumes inference images that resemble its training images in camera, scene and object appearance. The tutorial's adaptation data is synthetic, so a model adapted on it transfers to drawn signs of the same style and to nothing else. When these assumptions fail, the model still returns boxes. The pipeline reports no signal that the distribution has shifted.
 
@@ -118,7 +118,15 @@ AP summarises the precision–recall trade-off over all score levels, so it does
 
 `evaluation_report(result, ground_truth_boxes)` covers one image. It reports one `box_iou` per supplied reference box, against the best-overlapping detection **of the same label**, with the verdict `sample-sanity`. Without references it returns `not-measurable` and names the labelled data that would be needed.
 
-The upstream README reports AP 36.1 on COCO 2017 validation for this checkpoint. That value is upstream-reported, and this repository does not reproduce it. No value from this repository has been recorded yet.
+The upstream README reports AP 36.1 on COCO 2017 validation for this checkpoint. That value is upstream-reported, and this repository does not reproduce it.
+
+Measured in the one recorded run (Kaggle Tesla T4, 2026-09-25, default settings, seed 0; all data drawn in code, not photographs):
+
+- **Pretrained, COCO scene** (one drawn 640×480 image, threshold 0.9): 1 detection, `stop sign` at 0.9995 with `box_iou` 0.9119; the drawn traffic light, clock and sports ball were not detected (`box_iou` 0.0). This is `sample-sanity` evidence, not a detection benchmark.
+- **Degenerate probes:** 0 detections on the blank image and 0 on the noise image, at both 0.9 and 0.05.
+- **Held-out split** (10 drawn sign images, 17 boxes, one pass, no dispersion estimate): baseline with the untrained three-class head `ap` 0.1118, `ap50` 0.2123, `ap75` 0.1276; after the 10-epoch fine-tune `ap` 0.9043, `ap50` 1.0, `ap75` 1.0, per-class AP50 1.0 for each class. Training and held-out images come from the same generator, so the saturated `ap50` shows the workflow fits this synthetic style and says nothing about other images.
+- **New-data inference** (3 unseen drawn images from seed 99, 5 truth boxes, threshold 0.9): 3 of 5 signs found (IoU 0.924, 0.929, 0.908); one speed-limit sign and one stop sign were missed, and the third image returned no detection at all.
+- **Adapter reload:** 8 detections compared after export and reload, equivalent within 0.001.
 
 ###### Decision thresholds
 
@@ -170,10 +178,10 @@ Some sensitive uses are foreseeable although not intended: pedestrian detection 
 
 ###### Risks and harms
 
-- **Boxes on empty or unfamiliar input.** The model can return boxes for images that contain no object of any trained class. The operator and any downstream consumer bear the harm of a fabricated count or alert. Likelihood on real empty frames is unmeasured; the tutorial probes a blank and a noise image and records what it finds.
+- **Boxes on empty or unfamiliar input.** The model can return boxes for images that contain no object of any trained class. The operator and any downstream consumer bear the harm of a fabricated count or alert. Likelihood on real empty frames is unmeasured; the recorded tutorial run found 0 detections on its blank and noise probes, which says nothing about cluttered empty scenes.
 - **Missed objects.** An object that is small, occluded or rendered unusually is simply absent from the output, and no field flags the miss. The harm falls on whoever relies on the detection being complete.
 - **Mislabelling within a closed vocabulary.** An object outside the vocabulary that resembles a class is labelled as that class. Systems that act on labels inherit the error.
-- **Overfitting in adaptation.** A fine-tune on a few dozen images can score well on a held-out split drawn from the same source and fail on anything else. The operator who deploys it bears the harm, which is realised whenever training and deployment images differ.
+- **Overfitting in adaptation.** A fine-tune on a few dozen images can score well on a held-out split drawn from the same source and fail on anything else. The operator who deploys it bears the harm, which is realised whenever training and deployment images differ. The recorded tutorial run shows the pattern: held-out `ap50` 1.0 on images from the training generator, yet 2 of 5 signs missed on 3 new images.
 - **Person detection and surveillance.** `person` is a first-class output with unaudited per-group recall. The people in the processed images bear the harm of misuse or unequal error.
 - **Automation bias.** High softmax scores invite trust that an uncalibrated score has not earned. Operators who skip review turn a model error into a decision error.
 - **Leakage through adaptation data.** A random split of records that share a source photograph or session puts near-duplicates on both sides. The resulting held-out AP overstates quality without any signal; `split_dataset` documents that grouped data must be split by group.
@@ -214,7 +222,7 @@ The following uses are prohibited even where the model would work:
 
 ## Verification records
 
-No execution with the pinned weights has been recorded. The offline test suite runs a tiny random-weight YOLOS through fine-tuning, evaluation and adapter reload; that exercises the code path and is not a result about this model. `docs/release-verification.md` holds the release gate and the record table.
+`docs/release-verification.md` records one default-path Kaggle T4 execution of the notebook at commit `d0cdae8` (blob `f3aa5a97955a`) on 2026-09-25: 14/14 cells ok after one restart following the install cell; the measured values are under Performance Measures. The release gate's REL12 BYOD dataset exercise is pending, so the notebook remains a Candidate. The offline test suite runs a tiny random-weight YOLOS through fine-tuning, evaluation and adapter reload; that exercises the code path and is not a result about this model. `docs/release-verification.md` holds the release gate and the record table.
 
 ## References
 

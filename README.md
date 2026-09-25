@@ -2,7 +2,7 @@
 
 DIMER pipeline for **YOLOS-Small** (`hustvl/yolos-small`), a plain Vision Transformer (ViT-S/16) with 100 detection tokens, pre-trained on ImageNet-1k and fine-tuned on COCO 2017 with the DETR set-prediction loss. The pipeline loads the checkpoint only from a digest-verified local snapshot, returns pixel-space boxes with the model's softmax score under a caller-owned threshold, and adds a bounded fine-tuning workflow that re-heads YOLOS onto a new class vocabulary and exports a SafeTensors adapter.
 
-> **The upstream snapshot is pinned** to Hub commit `3d8f7130d3ce4907cb206fe1c8485dc8fe8703de` (pinned 2026-09-25). The manifest records every file's byte size and SHA-256, and each LFS digest matched the Hub's record. No execution with the pinned weights is recorded yet (see [Release status](#release-status)).
+> **The upstream snapshot is pinned** to Hub commit `3d8f7130d3ce4907cb206fe1c8485dc8fe8703de` (pinned 2026-09-25). The manifest records every file's byte size and SHA-256, and each LFS digest matched the Hub's record. A default-path execution recorded on 2026-09-25 (Kaggle T4); REL12 BYOD exercise pending before promotion (see [Release status](#release-status)).
 
 ## Upstream alignment
 
@@ -65,7 +65,7 @@ weights/yolos-small/
 
 ## Release status
 
-**Candidate.** The snapshot is pinned (`3d8f713`), but no execution with the pinned weights is recorded. Static checks, unit tests and the tiny-model test do not constitute notebook execution evidence; `docs/release-verification.md` defines the release gate.
+**Candidate.** The snapshot is pinned (`3d8f713`), and a default-path execution recorded on 2026-09-25 (Kaggle T4); REL12 BYOD exercise pending before promotion: the notebook at `d0cdae8` ran top to bottom on a Kaggle Tesla T4 (14/14 cells after one restart following the install cell). On 10 synthetic held-out images the adapted `ap` was 0.9043 (baseline 0.1118); on 3 unseen drawn images it found 3 of 5 signs. Results and caveats are in `docs/release-verification.md` and `MODEL_CARD.md`. Static checks, unit tests and the tiny-model test do not constitute notebook execution evidence; `docs/release-verification.md` defines the release gate.
 
 ## Documentation
 

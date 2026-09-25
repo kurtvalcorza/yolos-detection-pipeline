@@ -10,7 +10,7 @@ Notebook specification: **DIMER Notebook Specification 2.1**. The notebook is **
 
 | Notebook | Profile | Mode | Carrier | Capability | Default runtime | Sample | BYOD | Run-all | Release status |
 |---|---|---|---|---|---|---|---|---|---|
-| `yolos_detection_colab.ipynb` | `E2E` | `GUIDED` | standalone (generated) | COCO detection with `hustvl/yolos-small`, and a bounded fine-tune that re-heads YOLOS onto a three-class sign vocabulary, evaluates baseline and adapted AP@[.50:.95] and AP50 on a held-out split, infers on unseen images, and exports and reloads a SafeTensors adapter | CUDA GPU (T4 class) documented; CPU also runs | automatic (640×480 COCO scene and 40-image sign dataset, both drawn in code) | single image or labelled dataset directory, off by default; location fields `BYOD_IMAGE_PATH`, `BYOD_DATASET_DIR`; uploads stay in the runtime | not yet run on the pinned snapshot (`3d8f713`); see `../docs/release-verification.md` | **Candidate** |
+| `yolos_detection_colab.ipynb` | `E2E` | `GUIDED` | standalone (generated) | COCO detection with `hustvl/yolos-small`, and a bounded fine-tune that re-heads YOLOS onto a three-class sign vocabulary, evaluates baseline and adapted AP@[.50:.95] and AP50 on a held-out split, infers on unseen images, and exports and reloads a SafeTensors adapter | CUDA GPU (T4 class) documented; CPU also runs | automatic (640×480 COCO scene and 40-image sign dataset, both drawn in code) | single image or labelled dataset directory, off by default; location fields `BYOD_IMAGE_PATH`, `BYOD_DATASET_DIR`; uploads stay in the runtime | default-path execution recorded on 2026-09-25 (Kaggle T4); REL12 BYOD exercise pending before promotion; see `../docs/release-verification.md` | **Candidate** |
 
 ## Conformance notes
 
