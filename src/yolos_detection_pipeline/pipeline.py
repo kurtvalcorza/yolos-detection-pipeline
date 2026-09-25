@@ -22,7 +22,7 @@ import numpy as np
 from PIL import Image
 
 MODEL_ID = "hustvl/yolos-small"
-MODEL_REVISION = "unpinned"
+MODEL_REVISION = "3d8f7130d3ce4907cb206fe1c8485dc8fe8703de"
 MODEL_LICENSE = "apache-2.0"
 MODEL_KEY = "yolos-small"
 DEFAULT_WEIGHTS_DIR = Path(__file__).resolve().parents[2] / "weights" / MODEL_KEY

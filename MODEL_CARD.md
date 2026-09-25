@@ -18,7 +18,7 @@ date_published_source: "month of the YOLOS paper and first code release (arXiv:2
 > ⚠️ **Provided for research, training, and evaluation purposes only.** Model weights are redistributed unmodified under their upstream license, which controls your use, including any commercial use or redistribution; the accompanying code and notebooks are released under this repository's license. All of it is supplied **"as is"**, without warranty of any kind, and has not been validated for production, clinical, or safety-critical use. Running the notebooks downloads third-party weights and datasets governed by their own licenses and consumes compute on your own Colab/Kaggle account. To the maximum extent permitted by law, the maintainers of this repository and the DIMER platform accept no liability for any damages arising from their use. Hosting implies no affiliation with or endorsement by the original authors.
 
 > [!IMPORTANT]
-> The upstream snapshot is **not yet pinned**. `MODEL_REVISION` is the sentinel `"unpinned"` and the manifest records no SHA-256 digests. Until `python tools/pin_snapshot.py` records an immutable commit and every file's digest, the package refuses to stage, verify or load the weights, and the tutorial cannot run.
+> The upstream snapshot is pinned to Hub commit `3d8f7130d3ce4907cb206fe1c8485dc8fe8703de`, and the manifest records every file's SHA-256. No execution with the pinned weights has been recorded yet, so this card claims no measured value for this repository.
 
 ---
 
@@ -40,7 +40,7 @@ The upstream weights come from ImageNet-1k pre-training followed by supervised C
 
 What this repository adds to the upstream weights:
 
-- `verify_snapshot` and `stage_missing_files`: manifest checks and staging of the pinned files, both refusing to run while the snapshot is unpinned;
+- `verify_snapshot` and `stage_missing_files`: manifest checks and staging of the pinned files, both refusing to run if `MODEL_REVISION` is ever reset to the `"unpinned"` sentinel;
 - `YolosDetectionPipeline.from_pretrained`: loading from the verified directory only, with `trust_remote_code=False` and `local_files_only=True`;
 - `detect` and `detect_many`: input checks, threshold checks, and score-sorted pixel-space output;
 - `validate_inputs`, `validate_dataset`, `read_detection_records` and `evaluation_report`: the validation and single-image evaluation stages;
@@ -193,9 +193,9 @@ The following uses are prohibited even where the model would work:
 ## Immutable provenance
 
 - Model: `hustvl/yolos-small`
-- Revision: **not yet pinned** (`MODEL_REVISION = "unpinned"`). `python tools/pin_snapshot.py` resolves the Hub's `main` to a 40-hex commit, downloads every manifest file at that commit, and records each file's SHA-256.
-- Snapshot manifest: `weights/yolos-small/dimer-base-manifest.json`, 4 files, `totalBytes` 122771871. The byte sizes are the ones the Hub reported for its `main` branch when this repository was built.
-- `model.safetensors`: 122,763,274 bytes; SHA-256 not yet recorded.
+- Revision: `3d8f7130d3ce4907cb206fe1c8485dc8fe8703de` (pinned 2026-09-25 by `python tools/pin_snapshot.py`, which resolved the Hub's `main` to this commit, downloaded every manifest file at it, and recorded each file's SHA-256).
+- Snapshot manifest: `weights/yolos-small/dimer-base-manifest.json`, 4 files, `totalBytes` 122771871. The byte sizes and digests describe the files at the pinned commit.
+- `model.safetensors`: 122,763,274 bytes; SHA-256 `27823dd210017c83fb2abb5528b7344d8b73572b5764d20f9cda2c153727232c` (matches the Hub's LFS record).
 - `config.json`: 4,132 bytes; `YolosForObjectDetection`, 12 layers, hidden size 384, 100 detection tokens, 91 label slots.
 - `preprocessor_config.json`: 292 bytes; `YolosImageProcessor`, shorter side 800 px, longer side at most 1333 px, ImageNet normalisation.
 - `README.md`: 4,173 bytes; the upstream model card.
