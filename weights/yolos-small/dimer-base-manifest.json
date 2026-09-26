@@ -1,0 +1,30 @@
+{
+  "format": "dimer_hf_snapshot",
+  "formatVersion": 1,
+  "modelKey": "yolos-small",
+  "modelId": "hustvl/yolos-small",
+  "revision": "3d8f7130d3ce4907cb206fe1c8485dc8fe8703de",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4173,
+      "sha256": "0e95447d56c12b6833a42bc781fefcb318c65e6499d1b7b03912cbbfbc1c6352"
+    },
+    {
+      "path": "config.json",
+      "bytes": 4132,
+      "sha256": "340c26d18da821b80b7e3a558697f0d39328f99f9f4eabe246ea9851e7f50de5"
+    },
+    {
+      "path": "model.safetensors",
+      "bytes": 122763274,
+      "sha256": "27823dd210017c83fb2abb5528b7344d8b73572b5764d20f9cda2c153727232c"
+    },
+    {
+      "path": "preprocessor_config.json",
+      "bytes": 292,
+      "sha256": "27645e9dec37d884357ee5bf9eab8b5464c71cbb6660a56497e91caca681fdd4"
+    }
+  ],
+  "totalBytes": 122771871
+}
