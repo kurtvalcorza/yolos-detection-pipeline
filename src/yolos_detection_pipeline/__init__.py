@@ -31,6 +31,7 @@ from .pipeline import (
 from .samples import (
     SIGN_CLASSES,
     blank_scene,
+    held_out_support,
     noise_scene,
     sign_dataset,
     split_dataset,
@@ -64,6 +65,7 @@ __all__ = [
     "noise_scene",
     "read_detection_records",
     "sign_dataset",
+    "held_out_support",
     "split_dataset",
     "stage_missing_files",
     "tutorial_scene",
