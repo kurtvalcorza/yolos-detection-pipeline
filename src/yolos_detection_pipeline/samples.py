@@ -239,3 +239,31 @@ def split_dataset(
     train = [r for i, r in enumerate(records) if i in train_idx]
     held_out = [r for i, r in enumerate(records) if i not in train_idx]
     return train, held_out
+
+
+HELD_OUT_MIN_BOXES = 3
+
+
+def held_out_support(
+    records: list[dict[str, Any]],
+    class_names: list[str] | tuple[str, ...],
+    *,
+    minimum: int = HELD_OUT_MIN_BOXES,
+) -> dict[str, Any]:
+    """Reference boxes per class in a held-out split, with a named warning for every class below ``minimum``.
+
+    ``average_precision`` leaves a class with no held-out box out of its mean, and per-class AP on one or two
+    boxes moves in steps of 0.5 or 1.0, so the support belongs next to every AP that is reported (YOS-m2).
+    """
+    counts = {name: 0 for name in class_names}
+    for record in records:
+        for label in record["labels"]:
+            if label in counts:
+                counts[label] += 1
+    warnings = []
+    for name, count in counts.items():
+        if count == 0:
+            warnings.append(f"{name}: no held-out box, so this class is left out of the mean AP")
+        elif count < minimum:
+            warnings.append(f"{name}: only {count} held-out box(es); its AP moves in large steps")
+    return {"images": len(records), "boxes_per_class": counts, "minimum": minimum, "warnings": warnings}
