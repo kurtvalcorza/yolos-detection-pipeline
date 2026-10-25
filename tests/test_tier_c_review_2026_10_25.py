@@ -44,6 +44,6 @@ def test_prose_holds_across_both_recorded_colab_t4_runs():
     md = _markdown()
     for gone in ("has not been timed yet", "it was not re-run for this revision"):
         assert gone not in md, gone
-    for quoted in ("0.3352 and to 0.3160", "0.3653 → 0.3760 at epoch 9", "`ap` 0.865 and 0.8519",
+    for quoted in ("0.3352 and to 0.3160", "0.3653 → 0.3760)", "`ap` 0.865, 0.8519 and 0.8643",
                    "202.3 s for blob `198e104a`", "106.9 s and 102.6 s"):
         assert quoted in md, quoted
