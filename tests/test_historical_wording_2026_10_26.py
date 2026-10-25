@@ -17,7 +17,8 @@ def _markdown():
 def test_timing_promise_run_status_and_shared_pattern_are_gone():
     md = _markdown()
     for stale in ("about 3.5 minutes top to bottom", "about 105 s of it the fine-tune",
-                  "each completed one pass on a Colab T4", "rose once in each", "The earlier recorded T4 run found one"):
+                  "each completed one pass on a Colab T4", "rose once in each",
+                  "The earlier recorded T4 run found one"):
         assert stale not in md, stale
 
 

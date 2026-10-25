@@ -19,7 +19,7 @@ def test_t115_1_numbers_from_the_current_blob_run():
     md = _markdown()
     for stale in ("No run of this revision is recorded yet", "no run of this revision is recorded yet"):
         assert stale not in md, stale
-    assert "1.089" not in md and "`ap` 0.904." not in md
+    assert "`ap` 0.904." not in md and "1.0890 to 0.3347" in md  # 1.0890 is the labelled 9b56a646 run
     assert "1.0921" in md and "0.865" in md and "`59c0ed95`" in md
 
 
@@ -45,5 +45,5 @@ def test_prose_holds_across_both_recorded_colab_t4_runs():
     for gone in ("has not been timed yet", "it was not re-run for this revision"):
         assert gone not in md, gone
     for quoted in ("0.3352 and to 0.3160", "0.3653 → 0.3760)", "`ap` 0.865, 0.8519 and 0.8643",
-                   "202.3 s for blob `198e104a`", "106.9 s and 102.6 s"):
+                   "202.3 s for blob `198e104a`", "106.9 s, 102.6 s and 109.0 s"):
         assert quoted in md, quoted
