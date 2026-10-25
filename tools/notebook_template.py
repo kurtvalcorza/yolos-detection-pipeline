@@ -119,8 +119,8 @@ TEMPLATE = {
             "the evidence is produced and how to read it. **[Engineering]** — reproducibility, provenance and packaging.\n\n"
             "**Predict, then check.** Before each principal result a **Predict before running** prompt asks you to commit to an expectation; after "
             "it, **What to notice** describes normal output and a collapsed **Check your reasoning** block gives a worked answer. Write your own "
-            "answer first, then open it. The numbers the answers quote come from the Colab T4 run of blob `59c0ed95` (commit `0ca6715`, 2026-10-10), "
-            "recorded in `docs/release-verification.md`; it was not re-run for this revision, and the Kaggle T4 run of the previous version (25 September 2026) printed slightly different training numbers."
+            "answer first, then open it. The numbers the answers quote come from the two recorded Colab T4 runs, of blob `59c0ed95` (commit `0ca6715`, 2026-10-10) and of blob `198e104a` (commit `d23b8e4`, 2026-10-25), "
+            "recorded in `docs/release-verification.md`; where the two differ the answers give both, and the Kaggle T4 run of the previous version (25 September 2026) printed slightly different training numbers."
         ),
         (
             "## The task: Input → Model/System → Output\n\n"
@@ -172,7 +172,7 @@ TEMPLATE = {
         ),
     ],
     "prerequisites": [
-        "- **Runtime:** a fresh **Linux x86_64** runtime (Google Colab, Kaggle or Linux Jupyter). A CUDA GPU such as a Colab or Kaggle T4 is the documented runtime for the fine-tuning stages and is used automatically when present; the notebook also runs on CPU, more slowly. The kernel's own Python version does not matter: Section 1 builds a separate environment with CPython 3.12.12 from the hash-locked pins and every later cell runs there. Timing: the earlier version of this notebook took 172.1 s top to bottom on a Kaggle T4 (25 September 2026), 105.5 s of it the fine-tune, after a first pass that stopped in the old install cell for a restart (437.5 s in all); this version replaces that install with the isolated environment and has not been timed yet. The Linux build of `torch==2.14.0` with its CUDA libraries (several GB) and the ~123 MB checkpoint are the largest downloads.",
+        "- **Runtime:** a fresh **Linux x86_64** runtime (Google Colab, Kaggle or Linux Jupyter). A CUDA GPU such as a Colab or Kaggle T4 is the documented runtime for the fine-tuning stages and is used automatically when present; the notebook also runs on CPU, more slowly. The kernel's own Python version does not matter: Section 1 builds a separate environment with CPython 3.12.12 from the hash-locked pins and every later cell runs there. Timing: the earlier version of this notebook took 172.1 s top to bottom on a Kaggle T4 (25 September 2026), 105.5 s of it the fine-tune, after a first pass that stopped in the old install cell for a restart (437.5 s in all); this version replaces that install with the isolated environment, and on a fresh Colab T4 it took about 3.5 minutes top to bottom in one pass (213.6 s for blob `59c0ed95` on 2026-10-10, 202.3 s for blob `198e104a` on 2026-10-25), about 105 s of it the fine-tune (106.9 s and 102.6 s). The Linux build of `torch==2.14.0` with its CUDA libraries (several GB) and the ~123 MB checkpoint are the largest downloads.",
         "- **Knowledge:** basic Python and PIL; bounding boxes as xyxy pixel coordinates; intersection-over-union (IoU); and how to read average precision (AP50 and AP@[.50:.95]).",
         "- **Data:** the default path generates everything in code with `samples.py` and downloads no dataset: one 640×480 COCO demonstration scene and a 40-image labelled sign dataset. **Overlap with the training data:** the checkpoint "
         "was trained on COCO 2017 [1], [5] (model card); every evaluation image here is drawn in code when the notebook runs, so none can be in COCO "
@@ -186,7 +186,7 @@ TEMPLATE = {
         "adapter, reloads it onto a fresh base model to verify the detections, and writes machine-readable outputs with provenance. The pinned "
         "dependencies go into an isolated environment built from a hash lock, so the kernel's own packages are left alone and **no runtime "
         "restart is needed**; a second Run all reuses it. Nothing is skipped behind a default-off flag, and no clone or DIMER worker is "
-        "required (NOTEBOOK_SPEC 2.5 §5, RUN7, FT2). Hosted runs are recorded per notebook blob in `docs/release-verification.md`; the previous blob `59c0ed95` completed one pass on a Colab T4 on 2026-10-10 (213.6 s)."
+        "required (NOTEBOOK_SPEC 2.5 §5, RUN7, FT2). Hosted runs are recorded per notebook blob in `docs/release-verification.md`; blobs `59c0ed95` (2026-10-10, 213.6 s) and `198e104a` (2026-10-25, 202.3 s) each completed one pass on a Colab T4."
     ),
     "byod": (
         "Two optional BYOD branches are included, and both are off by default (`USE_BYOD_IMAGE = False`, `USE_BYOD_DATASET = False`). "
@@ -392,8 +392,8 @@ TEMPLATE = {
         {
             "md": (
                 "**What to notice (Section 8):** one loss line per epoch, then the configuration with the trainable and total parameter counts.\n\n"
-                "<details><summary>Check your reasoning</summary>Mostly, but not strictly. In the Colab T4 run of blob `59c0ed95` (commit `0ca6715`, 2026-10-10) the loss went from 1.0921 to "
-                "0.3352 and rose once (0.3653 → 0.3755 at epoch 9): with 30 images in batches of 4, single epochs are noisy. A falling training loss "
+                "<details><summary>Check your reasoning</summary>Mostly, but not strictly. In the Colab T4 runs of blob `59c0ed95` (commit `0ca6715`, 2026-10-10) and blob `198e104a` (commit `d23b8e4`, 2026-10-25) the loss went from 1.0921 to "
+                "0.3352 and to 0.3160, and rose once in each (0.3653 → 0.3755 and 0.3653 → 0.3760 at epoch 9): with 30 images in batches of 4, single epochs are noisy. A falling training loss "
                 "says the model fits these 30 images; it does not say it finds signs it has not seen.</details>\n\n"
                 "## 9. Evaluate on the held-out split · [Evaluation practice]\n\n"
                 "`evaluate` re-runs on the same held-out images with the same thresholds as the baseline, so the two rows are comparable. `ap50` "
@@ -420,7 +420,7 @@ TEMPLATE = {
             "md": (
                 "**What to notice (Section 9):** the three rows (`ap`, `ap50`, `ap75`) with the change from the baseline, and the per-class AP50 "
                 "with its support.\n\n"
-                "<details><summary>Check your reasoning</summary>In the Colab T4 run of blob `59c0ed95` (commit `0ca6715`, 2026-10-10) the adapted model reached `ap50` 1.0 and `ap` 0.865 (the Kaggle T4 run of the previous version printed 0.904). "
+                "<details><summary>Check your reasoning</summary>In the Colab T4 runs of blob `59c0ed95` (commit `0ca6715`, 2026-10-10) and blob `198e104a` (commit `d23b8e4`, 2026-10-25) the adapted model reached `ap50` 1.0 in both and `ap` 0.865 and 0.8519 (the table printed above is your run's; the Kaggle T4 run of the previous version printed 0.904). "
                 "`ap` is lower because it also demands tight boxes at IoU up to 0.95. An AP50 of 1.0 here is **saturated**: on 10 drawn images from "
                 "the generator the model was trained on, with every box ranked down to score 0.05, the test is too easy to show how much further the "
                 "model could go, and it is not evidence that the model finds signs in general. Section 10 tests that directly.</details>\n\n"
