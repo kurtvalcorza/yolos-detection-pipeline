@@ -2,6 +2,8 @@
 
 `tutorials/yolos_detection_colab.ipynb` (`E2E`, **standalone** carrier) is a **release candidate** until the exact notebook revision has executed top-to-bottom in a clean supported runtime. Unit tests, the tiny-model test, JSON validation, code-cell compilation, the generator parity checks and `tools/validate_release_assets.py` are necessary checks but are **not** runtime evidence under DIMER Notebook Specification 2.1 (REL8). This file is the durable release-gate record for the notebook.
 
+**Pending (tier C review fixes, 2026-10-25):** `tutorials/yolos_detection_colab.ipynb` blob `198e104ab81edd00048b416ee887220428c348f4`, generated at `973b9c5` (T115-1, T115-2, T115-S). It changes markdown, the use notice, `metadata.dimer` and the `NOTEBOOK_SOURCE` record only. Status **Candidate**; its hosted Colab T4 run is pending, and the runs below describe earlier blobs, including the 2026-10-10 Colab T4 run of the previous blob `59c0ed95` (REL14).
+
 The upstream snapshot is pinned to `3d8f7130d3ce4907cb206fe1c8485dc8fe8703de` and the notebook is regenerated with that revision and manifest, so it can run. A default-path execution recorded on 2026-09-25 (Kaggle T4); REL12 BYOD exercise pending before promotion; see the record below. The regenerated blob `59c0ed95ea55` (commit `0ca6715`) completed one pass with no restart and 0 errors on a fresh Colab Tesla T4 on 2026-10-10 (Colab CLI 0.7.4 sequential execution, 16/16 code cells, 213.6 s; baseline `ap` 0.1118 / `ap50` 0.2123 → adapted `ap` 0.8650 / `ap50` 1.0; 3 of 5 unseen signs at 0.9; reload equivalent); status stays Candidate.
 
 ## Automatic coverage (static and unit, every pull request)
