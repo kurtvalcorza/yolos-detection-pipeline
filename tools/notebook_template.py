@@ -1,4 +1,4 @@
-"""Per-repository template for tools/build_notebook.py (NOTEBOOK_SPEC 2.2 §4 standalone carrier).
+"""Per-repository template for tools/build_notebook.py (NOTEBOOK_SPEC 2.5 §4 standalone carrier).
 
 Only the task-specific prose and stage cells live here. Runtime install, the embedded package, and the
 model pin/stage/verify cells are produced by the generator from repository sources so they cannot
@@ -119,8 +119,8 @@ TEMPLATE = {
             "the evidence is produced and how to read it. **[Engineering]** — reproducibility, provenance and packaging.\n\n"
             "**Predict, then check.** Before each principal result a **Predict before running** prompt asks you to commit to an expectation; after "
             "it, **What to notice** describes normal output and a collapsed **Check your reasoning** block gives a worked answer. Write your own "
-            "answer first, then open it. The numbers the answers quote come from the recorded Kaggle T4 run of the previous version of this "
-            "notebook, with the same defaults (25 September 2026); no run of this revision is recorded yet."
+            "answer first, then open it. The numbers the answers quote come from the Colab T4 run of blob `59c0ed95` (commit `0ca6715`, 2026-10-10), "
+            "recorded in `docs/release-verification.md`; it was not re-run for this revision, and the Kaggle T4 run of the previous version (25 September 2026) printed slightly different training numbers."
         ),
         (
             "## The task: Input → Model/System → Output\n\n"
@@ -174,7 +174,10 @@ TEMPLATE = {
     "prerequisites": [
         "- **Runtime:** a fresh **Linux x86_64** runtime (Google Colab, Kaggle or Linux Jupyter). A CUDA GPU such as a Colab or Kaggle T4 is the documented runtime for the fine-tuning stages and is used automatically when present; the notebook also runs on CPU, more slowly. The kernel's own Python version does not matter: Section 1 builds a separate environment with CPython 3.12.12 from the hash-locked pins and every later cell runs there. Timing: the earlier version of this notebook took 172.1 s top to bottom on a Kaggle T4 (25 September 2026), 105.5 s of it the fine-tune, after a first pass that stopped in the old install cell for a restart (437.5 s in all); this version replaces that install with the isolated environment and has not been timed yet. The Linux build of `torch==2.14.0` with its CUDA libraries (several GB) and the ~123 MB checkpoint are the largest downloads.",
         "- **Knowledge:** basic Python and PIL; bounding boxes as xyxy pixel coordinates; intersection-over-union (IoU); and how to read average precision (AP50 and AP@[.50:.95]).",
-        "- **Data:** the default path generates everything in code with `samples.py` and downloads no dataset: one 640×480 COCO demonstration scene and a 40-image labelled sign dataset. BYOD is optional and off by default. Expected BYOD input: one image, or a directory holding `annotations.json` — a list of `{'file': 'name.png', 'boxes': [[x0, y0, x1, y1], ...], 'labels': [name, ...]}` objects — and the image files it names. Do not upload confidential or restricted data to a hosted notebook environment unless you are authorized to do so; uploaded inputs stay in this runtime and are not sent to any inference API.",
+        "- **Data:** the default path generates everything in code with `samples.py` and downloads no dataset: one 640×480 COCO demonstration scene and a 40-image labelled sign dataset. **Overlap with the training data:** the checkpoint "
+        "was trained on COCO 2017 [1], [5] (model card); every evaluation image here is drawn in code when the notebook runs, so none can be in COCO "
+        "or any other training set (verified by construction). The demonstration scene draws COCO classes, so the pretrained detector's "
+        "success on it reflects classes it was trained on. BYOD is optional and off by default. Expected BYOD input: one image, or a directory holding `annotations.json` — a list of `{'file': 'name.png', 'boxes': [[x0, y0, x1, y1], ...], 'labels': [name, ...]}` objects — and the image files it names. Do not upload confidential or restricted data to a hosted notebook environment unless you are authorized to do so; uploaded inputs stay in this runtime and are not sent to any inference API.",
     ],
     "run_all": (
         "Selecting **Run all** in a fresh supported runtime installs the pinned dependencies, stages and digest-verifies the pinned checkpoint, "
@@ -183,13 +186,13 @@ TEMPLATE = {
         "adapter, reloads it onto a fresh base model to verify the detections, and writes machine-readable outputs with provenance. The pinned "
         "dependencies go into an isolated environment built from a hash lock, so the kernel's own packages are left alone and **no runtime "
         "restart is needed**; a second Run all reuses it. Nothing is skipped behind a default-off flag, and no clone or DIMER worker is "
-        "required (NOTEBOOK_SPEC 2.2 §5, RUN7, FT2). No run of this revision is recorded yet."
+        "required (NOTEBOOK_SPEC 2.5 §5, RUN7, FT2). Hosted runs are recorded per notebook blob in `docs/release-verification.md`; the previous blob `59c0ed95` completed one pass on a Colab T4 on 2026-10-10 (213.6 s)."
     ),
     "byod": (
         "Two optional BYOD branches are included, and both are off by default (`USE_BYOD_IMAGE = False`, `USE_BYOD_DATASET = False`). "
         "`USE_BYOD_IMAGE` runs your own image through the same validation, detection and evaluation-report stages as the sample scene. "
         "`USE_BYOD_DATASET` takes your own labelled detection records through the full adaptation workflow — validate, split, baseline, "
-        "fine-tune, evaluate, export, reload with the same equivalence check as the sample, and a result JSON — under NOTEBOOK_SPEC 2.2 DAT14; it "
+        "fine-tune, evaluate, export, reload with the same equivalence check as the sample, and a result JSON — under NOTEBOOK_SPEC 2.5 DAT14; it "
         "needs at least 8 labelled records and warns, by class name, when the held-out split has fewer than 3 boxes of a class. Set "
         "`BYOD_IMAGE_PATH` or `BYOD_DATASET_DIR` to read from a location without an upload dialog (EXE2)."
     ),
@@ -389,8 +392,8 @@ TEMPLATE = {
         {
             "md": (
                 "**What to notice (Section 8):** one loss line per epoch, then the configuration with the trainable and total parameter counts.\n\n"
-                "<details><summary>Check your reasoning</summary>Mostly, but not strictly. In the earlier recorded run the loss went from 1.089 to "
-                "0.251 and rose once (0.549 → 0.556 at epoch 6): with 30 images in batches of 4, single epochs are noisy. A falling training loss "
+                "<details><summary>Check your reasoning</summary>Mostly, but not strictly. In the Colab T4 run of blob `59c0ed95` (commit `0ca6715`, 2026-10-10) the loss went from 1.0921 to "
+                "0.3352 and rose once (0.3653 → 0.3755 at epoch 9): with 30 images in batches of 4, single epochs are noisy. A falling training loss "
                 "says the model fits these 30 images; it does not say it finds signs it has not seen.</details>\n\n"
                 "## 9. Evaluate on the held-out split · [Evaluation practice]\n\n"
                 "`evaluate` re-runs on the same held-out images with the same thresholds as the baseline, so the two rows are comparable. `ap50` "
@@ -417,7 +420,7 @@ TEMPLATE = {
             "md": (
                 "**What to notice (Section 9):** the three rows (`ap`, `ap50`, `ap75`) with the change from the baseline, and the per-class AP50 "
                 "with its support.\n\n"
-                "<details><summary>Check your reasoning</summary>The earlier recorded run reached `ap50` 1.0, `ap75` 1.0 and `ap` 0.904. "
+                "<details><summary>Check your reasoning</summary>In the Colab T4 run of blob `59c0ed95` (commit `0ca6715`, 2026-10-10) the adapted model reached `ap50` 1.0 and `ap` 0.865 (the Kaggle T4 run of the previous version printed 0.904). "
                 "`ap` is lower because it also demands tight boxes at IoU up to 0.95. An AP50 of 1.0 here is **saturated**: on 10 drawn images from "
                 "the generator the model was trained on, with every box ranked down to score 0.05, the test is too easy to show how much further the "
                 "model could go, and it is not evidence that the model finds signs in general. Section 10 tests that directly.</details>\n\n"
@@ -679,6 +682,7 @@ TEMPLATE = {
         "## Troubleshooting\n\n"
         "| Symptom | Likely cause | What to do |\n"
         "|---|---|---|\n"
+        "| You want the isolated environment somewhere other than `dimer_isolated_env/` | Section 1 builds it in the working directory by default | Set the environment variable `DIMER_ISOLATED_ENV` to a path before running Section 1. |\n"
         "| Section 1 stops with `This notebook needs a Linux x86_64 runtime` | a local Windows or macOS kernel, or an ARM machine | Use Google Colab, Kaggle or a Linux x86_64 Jupyter; the lock holds manylinux x86_64 wheels. |\n"
         "| Section 1 fails while downloading, or `The pinned uv wheel failed its size/SHA-256 check` | a network failure, or an altered download | Run the Section 1 install cell again; a repeated mismatch means the download is being altered — never edit the digest. |\n"
         "| `holds Python …, not 3.12.12` in Section 1 | an older `dimer_isolated_env/` folder from another notebook version | Delete that folder (or start a fresh runtime) and run the install cell again. |\n"
@@ -698,12 +702,11 @@ TEMPLATE = {
         "4. With `FREEZE_EARLY_LAYERS = False` (Section 14), held-out AP ___ and the fine-tune took ___.\n"
         "5. What I would need before trusting this adapted detector on real road photographs: ___.\n\n"
         "## References\n\n"
-        "- Fang, Y., Liao, B., Wang, X., Fang, J., Qi, J., Wu, R., Niu, J. and Liu, W. (2021). *You Only Look at One Sequence: Rethinking Transformer in Vision through Object Detection.* [arXiv:2106.00666](https://arxiv.org/abs/2106.00666).\n"
-        "- Carion, N. et al. (2020). *End-to-End Object Detection with Transformers.* [arXiv:2005.12872](https://arxiv.org/abs/2005.12872) — the set-prediction loss.\n"
-        "- Upstream repository: [hustvl/YOLOS](https://github.com/hustvl/YOLOS) — MIT.\n"
-        "- Hugging Face checkpoint: [hustvl/yolos-small](https://huggingface.co/hustvl/yolos-small) — Apache-2.0.\n"
-        "- Lin, T.-Y. et al. (2014). *Microsoft COCO: Common Objects in Context.* [arXiv:1405.0312](https://arxiv.org/abs/1405.0312).\n"
-        "- Repository model card: https://github.com/kurtvalcorza/yolos-detection-pipeline/blob/main/MODEL_CARD.md\n"
-        "- [`kurtvalcorza/yolos-detection-pipeline`](https://github.com/kurtvalcorza/yolos-detection-pipeline) — source repository for this pipeline."
+        "[1] Y. Fang *et al.*, \"You only look at one sequence: Rethinking transformer in vision through object detection,\" in *Adv. Neural Inf. Process. Syst. (NeurIPS)*, 2021. [Online]. Available: https://arxiv.org/abs/2106.00666\n\n"
+        "[2] N. Carion *et al.*, \"End-to-end object detection with transformers,\" in *Proc. Eur. Conf. Comput. Vis. (ECCV)*, 2020 (the set-prediction loss). [Online]. Available: https://arxiv.org/abs/2005.12872\n\n"
+        "[3] T.-Y. Lin *et al.*, \"Microsoft COCO: Common objects in context,\" in *Proc. Eur. Conf. Comput. Vis. (ECCV)*, 2014. [Online]. Available: https://arxiv.org/abs/1405.0312\n\n"
+        "[4] hustvl, \"YOLOS,\" GitHub repository (MIT). [Online]. Available: https://github.com/hustvl/YOLOS\n\n"
+        "[5] hustvl, \"yolos-small,\" Hugging Face model checkpoint (Apache-2.0). [Online]. Available: https://huggingface.co/hustvl/yolos-small\n\n"
+        "[6] K. Valcorza, \"yolos-detection-pipeline,\" source repository; model card: https://github.com/kurtvalcorza/yolos-detection-pipeline/blob/main/MODEL_CARD.md. [Online]. Available: https://github.com/kurtvalcorza/yolos-detection-pipeline"
     ),
 }
